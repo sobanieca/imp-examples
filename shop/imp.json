@@ -1,0 +1,6 @@
+{
+  "version": "0.1.0",
+  // islands/main.js is the entry that `imp build` bundles for the server pages.
+  "lint": { "exclude": ["server/", "dev.js", "public/"], "publicExports": ["islands/main.js"] },
+  "fmt": { "exclude": ["server/", "dev.js", "public/"] }
+}

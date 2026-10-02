@@ -1,0 +1,5 @@
+{
+  "version": "0.1.0",
+  "map": "src/app-map.js",
+  "mocks": { "folder": "mocks", "enabled": true }
+}
