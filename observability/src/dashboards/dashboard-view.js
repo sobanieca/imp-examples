@@ -1,4 +1,5 @@
 import { component } from 'imp'
+import { lang, t } from 'imp/i18n'
 import { luPencil, luRefreshCw, luSearch } from 'imp/icons'
 import { useHttpClient } from 'imp/http'
 import { navigate } from 'imp/router'
@@ -9,20 +10,34 @@ import { skeleton } from 'imp/std/feedback'
 import { segmented, select } from 'imp/std/inputs'
 import { flex, stack } from 'imp/std/layout'
 import { app } from '../app-map.js'
+import { message, say } from '../i18n.js'
 import { panelGrid } from './panel.js'
 
-const RANGES = [
-  { value: '15m', label: '15m' },
-  { value: '1h', label: '1h' },
-  { value: '6h', label: '6h' },
-  { value: '24h', label: '24h' },
-]
+const RANGES = ['15m', '1h', '6h', '24h']
+const REFRESH = ['10', '30']
 
-const REFRESH = [
-  { value: 'off', label: 'Auto refresh off' },
-  { value: '10', label: 'Every 10 seconds' },
-  { value: '30', label: 'Every 30 seconds' },
-]
+// Options are read once, so these two are built again on a language switch.
+// Their value lives in a state, so the choice survives the rebuild.
+const rangePicker = (range) =>
+  lang.view(() =>
+    segmented({
+      value: range,
+      ariaLabel: t('dashboard.range'),
+      options: RANGES.map((value) => ({ value, label: t(`dashboard.ranges.${value}`) })),
+    })
+  )
+
+const refreshPicker = (refreshEvery) =>
+  lang.view(() =>
+    select({
+      value: refreshEvery,
+      ariaLabel: t('dashboard.autoRefresh'),
+      options: [
+        { value: 'off', label: t('dashboard.refreshOff') },
+        ...REFRESH.map((value) => ({ value, label: t(`dashboard.refreshEvery.${value}`) })),
+      ],
+    })
+  )
 
 export const dashboardView = component('beacon-dashboard-view', {
   loading: () => skeleton({ lines: 8 }),
@@ -59,21 +74,24 @@ export const dashboardView = component('beacon-dashboard-view', {
         ),
         flex(
           { gap: 2, verticalAlign: 'center', wrap: true },
-          segmented({ value: range, ariaLabel: 'Time range', options: RANGES }),
-          select({ value: refreshEvery, ariaLabel: 'Auto refresh', options: REFRESH }),
+          rangePicker(range),
+          refreshPicker(refreshEvery),
           tooltip(
-            { text: 'Refresh now' },
+            { text: message('dashboard.refreshNow') },
             button(
-              { square: true, label: 'Refresh now', events: { click: refresh } },
+              { square: true, label: message('dashboard.refreshNow'), events: { click: refresh } },
               icon(luRefreshCw),
             ),
           ),
-          button({ events: { click: edit } }, icon(luPencil, { size: 'sm' }), 'Edit'),
+          button({ events: { click: edit } }, icon(luPencil, { size: 'sm' }), say('common.edit')),
         ),
       ),
       dashboard.panels.length > 0 ? panelGrid({ panels: dashboard.panels, query }) : emptyState(
-        { title: 'No panels yet', description: 'Open the editor and add the first panel.' },
-        button({ variant: 'primary', events: { click: edit } }, 'Add a panel'),
+        {
+          title: message('dashboard.noPanels'),
+          description: message('dashboard.noPanelsDescription'),
+        },
+        button({ variant: 'primary', events: { click: edit } }, say('dashboard.addPanel')),
       ),
     )
   },
@@ -82,7 +100,7 @@ export const dashboardView = component('beacon-dashboard-view', {
     emptyState({
       icon: luSearch,
       kind: 'error',
-      title: 'Dashboard not found',
-      description: 'It may have been deleted.',
+      title: message('dashboard.notFound'),
+      description: message('dashboard.notFoundDescription'),
     }),
 })

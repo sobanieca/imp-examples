@@ -1,3 +1,5 @@
+import { t } from 'imp/i18n'
+
 // Two themes on top of the built-in ones, with Beacon's orange as the primary colour.
 export const darkTheme = {
   name: 'beacon-dark',
@@ -11,7 +13,8 @@ const lightTheme = {
   tokens: { 'color-primary': '#d45a00', 'color-on-primary': '#ffffff' },
 }
 
-export const THEMES = [
-  { value: 'beacon-dark', label: 'Dark', theme: darkTheme },
-  { value: 'beacon-light', label: 'Light', theme: lightTheme },
+// A function, so the labels come out in the current language.
+export const themeChoices = () => [
+  { value: 'beacon-dark', label: t('shell.themes.dark'), theme: darkTheme },
+  { value: 'beacon-light', label: t('shell.themes.light'), theme: lightTheme },
 ]

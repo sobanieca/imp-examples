@@ -1,6 +1,15 @@
 import { component } from 'imp'
 import { div } from 'imp/html'
-import { luChartBar, luChartColumn, luChartLine, luGauge, luScrollText, luTable } from 'imp/icons'
+import { lang, t } from 'imp/i18n'
+import {
+  luChartBar,
+  luChartColumn,
+  luChartLine,
+  luChartSpline,
+  luGauge,
+  luScrollText,
+  luTable,
+} from 'imp/icons'
 import { useHttpClient } from 'imp/http'
 import { computed, initState } from 'imp/state'
 import { text } from 'imp/std'
@@ -8,37 +17,41 @@ import { card, tag } from 'imp/std/display'
 import { chart, table } from 'imp/std/data'
 import { notice, progress, skeleton } from 'imp/std/feedback'
 import { flex } from 'imp/std/layout'
+import { formatNumber, formatTime, message, say } from '../i18n.js'
+import { timeSeries } from './time-series.js'
 
+// The labels are messages: panel.types.<value> and panel.widths.<value>.
 export const PANEL_TYPES = [
-  { value: 'line', label: 'Line', icon: luChartLine },
-  { value: 'column', label: 'Columns', icon: luChartColumn },
-  { value: 'bar', label: 'Bars', icon: luChartBar },
-  { value: 'stat', label: 'Stat', icon: luGauge },
-  { value: 'table', label: 'Table', icon: luTable },
-  { value: 'logs', label: 'Logs', icon: luScrollText },
+  { value: 'timeseries', icon: luChartSpline },
+  { value: 'line', icon: luChartLine },
+  { value: 'column', icon: luChartColumn },
+  { value: 'bar', icon: luChartBar },
+  { value: 'stat', icon: luGauge },
+  { value: 'table', icon: luTable },
+  { value: 'logs', icon: luScrollText },
 ]
 
-export const PANEL_WIDTHS = [
-  { value: 'small', label: '1/3' },
-  { value: 'medium', label: '2/3' },
-  { value: 'full', label: 'Full' },
-]
+export const PANEL_WIDTHS = ['small', 'medium', 'full']
 
-const round = (value) => Number(value).toLocaleString(undefined, { maximumFractionDigits: 1 })
+export const typeLabel = (type) => t(`panel.types.${type}`)
+export const widthLabel = (width) => t(`panel.widths.${width}`)
+
+const withUnit = (value, unit) => `${formatNumber(value)} ${unit}`
 const last = (values) => values.at(-1)
 const average = (values) => values.reduce((sum, value) => sum + value, 0) / values.length
 
-// Every metric query answers { unit, max, labels, series }. A Loki query answers { logs }.
-// Each panel type is a std component fed with live props: a refresh only sets
-// the `data` state, and the chart, gauge or table updates in place.
+// Every metric query answers { unit, max, times, series }. A Loki query answers { logs }.
+// Each panel type is a component fed with live props: a refresh only sets the
+// `data` state, and the chart, gauge or table updates in place. A language
+// switch builds the body again (see panelView), so plain t() is enough here.
 
 const lineChart = (panel, data, unit) =>
   chart({
     type: 'line',
     label: panel.title,
-    labels: computed([data], (result) => result.labels ?? []),
+    labels: computed([data], (result) => (result.times ?? []).map(formatTime)),
     series: computed([data], (result) => result.series ?? []),
-    format: (value) => `${round(value)} ${unit}`,
+    format: (value) => withUnit(value, unit),
   })
 
 // Columns and bars compare the series: the latest value and the mean of each.
@@ -48,10 +61,10 @@ const comparisonChart = (panel, data, unit) =>
     label: panel.title,
     labels: computed([data], (result) => (result.series ?? []).map((series) => series.name)),
     series: computed([data], (result) => [
-      { name: 'Latest', values: (result.series ?? []).map((series) => last(series.values)) },
-      { name: 'Mean', values: (result.series ?? []).map((series) => average(series.values)) },
+      { name: t('panel.latest'), values: (result.series ?? []).map((one) => last(one.values)) },
+      { name: t('panel.mean'), values: (result.series ?? []).map((one) => average(one.values)) },
     ]),
-    format: (value) => `${round(value)} ${unit}`,
+    format: (value) => withUnit(value, unit),
   })
 
 const stat = (panel, data, { unit, max, series }) => {
@@ -65,7 +78,7 @@ const stat = (panel, data, { unit, max, series }) => {
     value: computed([data], latest),
     max: scale,
     color: ratio > 0.8 ? 'red' : ratio > 0.6 ? 'amber' : 'green',
-    format: (value) => `${round(value)} ${unit}`,
+    format: (value) => withUnit(value, unit),
   })
 }
 
@@ -73,13 +86,13 @@ const summaryTable = (panel, data, unit) =>
   table({
     label: panel.title,
     columns: [
-      { key: 'name', label: 'Series', sortable: true },
+      { key: 'name', label: t('panel.columns.series'), sortable: true },
       ...['last', 'min', 'max', 'mean'].map((key) => ({
         key,
-        label: key[0].toUpperCase() + key.slice(1),
+        label: t(`panel.columns.${key}`),
         align: 'end',
         sortable: true,
-        render: (row) => `${round(row[key])} ${unit}`,
+        render: (row) => withUnit(row[key], unit),
       })),
     ],
     rows: computed([data], (result) =>
@@ -99,14 +112,14 @@ const logTable = (panel, data) =>
   table({
     label: panel.title,
     columns: [
-      { key: 'time', label: 'Time' },
+      { key: 'time', label: t('panel.logs.time'), render: (row) => formatTime(row.time) },
       {
         key: 'level',
-        label: 'Level',
+        label: t('panel.logs.level'),
         render: (row) => tag({ color: LEVEL_COLORS[row.level], size: 'sm' }, row.level),
       },
-      { key: 'service', label: 'Service' },
-      { key: 'message', label: 'Message' },
+      { key: 'service', label: t('panel.logs.service') },
+      { key: 'message', label: t('panel.logs.message') },
     ],
     rows: computed([data], (result) => result.logs ?? []),
   })
@@ -117,6 +130,9 @@ const panelBody = (panel, data) => {
   if (panel.type === 'stat') return stat(panel, data, result)
   if (panel.type === 'table') return summaryTable(panel, data, result.unit)
   if (panel.type === 'line') return lineChart(panel, data, result.unit)
+  if (panel.type === 'timeseries') {
+    return timeSeries({ label: panel.title, data, unit: result.unit })
+  }
   return comparisonChart(panel, data, result.unit)
 }
 
@@ -147,16 +163,18 @@ export const panelView = component('beacon-panel', {
         padding: 'sm',
         header: flex(
           { horizontalAlign: 'justify', verticalAlign: 'center' },
-          text({ weight: 'bold' }, panel.title || 'Untitled panel'),
+          text({ weight: 'bold' }, panel.title || say('panel.untitled')),
           text({ tone: 'secondary', size: 'sm' }, panel.metric),
         ),
       },
       status.view((current) => {
         if (current === 'loading') return skeleton({ lines: 5 })
         if (current === 'error') {
-          return notice({ kind: 'error', title: 'Query failed' }, data.get().error)
+          return notice({ kind: 'error', title: message('panel.queryFailed') }, data.get().error)
         }
-        return panelBody(panel, data)
+        // Built again on a language switch: column headers, series names and
+        // every number and time format then follow the new language.
+        return lang.view(() => panelBody(panel, data))
       }),
     )
   },

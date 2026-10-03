@@ -1,4 +1,5 @@
 import { component } from 'imp'
+import { lang } from 'imp/i18n'
 import { luActivity, luLayoutDashboard, luLogOut, luPlug } from 'imp/icons'
 import { initHttpClient } from 'imp/http'
 import { guard, redirect, router, wait } from 'imp/router'
@@ -6,15 +7,16 @@ import { initState } from 'imp/state'
 import { icon, menuButton } from 'imp/std'
 import { emptyState } from 'imp/std/display'
 import { toast } from 'imp/std/feedback'
-import { appLogo, notifications, shell, themeSelect } from 'imp/std/shell'
+import { appLogo, langSelect, notifications, shell, themeSelect } from 'imp/std/shell'
 import { alertFeed } from './alert-feed.js'
 import { app } from './app-map.js'
 import { connectorList } from './connectors/connector-list.js'
 import { dashboardEdit } from './dashboards/dashboard-edit.js'
 import { dashboardList } from './dashboards/dashboard-list.js'
 import { dashboardView } from './dashboards/dashboard-view.js'
+import { LANGUAGES, message, writeLang } from './i18n.js'
 import { signInPage } from './sign-in.js'
-import { THEMES } from './theme.js'
+import { themeChoices } from './theme.js'
 import { readToken, writeToken } from './token.js'
 
 // One guard for every node with `access` in the map: wait for the session,
@@ -53,6 +55,8 @@ export const root = component('beacon-root', {
         ),
     )
 
+    lang.watch(self, writeLang)
+
     const signOut = () => {
       writeToken(null)
       session.set(null)
@@ -62,7 +66,7 @@ export const root = component('beacon-root', {
       {
         logo: appLogo({
           label: 'Beacon',
-          tagline: 'observability',
+          tagline: message('shell.tagline'),
           icon: icon(luActivity, { size: 'lg', color: 'primary' }),
         }),
         navbar: {
@@ -71,12 +75,22 @@ export const root = component('beacon-root', {
         },
         extras: [
           notifications({ variant: 'ghost' }),
-          themeSelect({ themes: THEMES, variant: 'ghost' }),
+          langSelect({ languages: LANGUAGES, variant: 'ghost', remember: false }),
+          // The labels of the theme choices are plain strings, so the picker is
+          // built again in the new language.
+          lang.view(() => themeSelect({ themes: themeChoices(), variant: 'ghost' })),
           menuButton(
             {
               variant: 'ghost',
               trigger: 'arrow',
-              items: [{ id: 'sign-out', label: 'Sign out', icon: luLogOut, onClick: signOut }],
+              items: [
+                {
+                  id: 'sign-out',
+                  label: message('shell.signOut'),
+                  icon: luLogOut,
+                  onClick: signOut,
+                },
+              ],
             },
             session.text((user) => user?.name ?? ''),
           ),
@@ -99,7 +113,7 @@ export const root = component('beacon-root', {
         },
         options: { [app.dashboards.$dashboardId]: 'beacon.dashboardOptions' },
         title: ({ crumbs }) => `${crumbs.at(-1)} - Beacon`,
-        notFound: () => emptyState({ variant: 'noResults', title: 'Page not found' }),
+        notFound: () => emptyState({ variant: 'noResults', title: message('shell.notFound') }),
       }),
     )
   },

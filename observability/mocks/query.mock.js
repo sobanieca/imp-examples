@@ -3,8 +3,6 @@ import { connectors, metrics } from './db.js'
 const POINTS = 30
 const MINUTES = { '15m': 15, '1h': 60, '6h': 360, '24h': 1440 }
 
-const time = (date) => date.toISOString().slice(11, 16)
-
 // A wavy line around `base`, a little different for every series and every call.
 const values = (base, max, seed) =>
   Array.from({ length: POINTS }, (_, i) => {
@@ -26,7 +24,7 @@ const MESSAGES = [
 const logs = () =>
   Array.from({ length: 12 }, (_, i) => ({
     id: `${Date.now()}-${i}`,
-    time: time(new Date(Date.now() - i * 37_000)),
+    time: Date.now() - i * 37_000,
     level: LEVELS[Math.floor(Math.random() * LEVELS.length)],
     service: ['api', 'web', 'worker'][i % 3],
     message: MESSAGES[Math.floor(Math.random() * MESSAGES.length)],
@@ -52,10 +50,8 @@ export const mocks = [
         body: {
           unit: metric.unit,
           max: metric.max,
-          labels: Array.from(
-            { length: POINTS },
-            (_, i) => time(new Date(now - (POINTS - i) * step)),
-          ),
+          // Timestamps in milliseconds. The app formats them in the reader's language.
+          times: Array.from({ length: POINTS }, (_, i) => now - (POINTS - i) * step),
           series: metric.series.map((name, i) => ({
             name,
             values: values(metric.base, metric.max, i),

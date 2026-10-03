@@ -1,4 +1,5 @@
 import { component } from 'imp'
+import { lang, t } from 'imp/i18n'
 import { luLayoutDashboard, luPencil, luPlus, luTrash2 } from 'imp/icons'
 import { useHttpClient } from 'imp/http'
 import { navigate } from 'imp/router'
@@ -10,6 +11,7 @@ import { notify, skeleton } from 'imp/std/feedback'
 import { textField } from 'imp/std/inputs'
 import { flex, stack } from 'imp/std/layout'
 import { app } from '../app-map.js'
+import { message, plural, say } from '../i18n.js'
 
 const editHref = (dashboardId) => app.dashboards.$dashboardId.edit.href({ dashboardId })
 
@@ -26,21 +28,22 @@ export const dashboardList = component('beacon-dashboard-list', {
 
     api.get('/dashboards').then(dashboards.set)
 
+    // `lang` is a dependency too: the panel count tag is text in the current language.
     const items = computed(
-      [dashboards, search],
+      [dashboards, search, lang],
       (all, text) =>
         (all ?? []).filter((dashboard) => matches(dashboard, text)).map((dashboard) => ({
           id: dashboard.id,
           title: dashboard.title,
           description: dashboard.description,
           icon: luLayoutDashboard,
-          tag: { text: `${dashboard.panels.length} panels`, color: 'blue' },
+          tag: { text: plural('dashboards.panels', dashboard.panels.length), color: 'blue' },
           href: app.dashboards.$dashboardId.href({ dashboardId: dashboard.id }),
         })),
     )
 
     const create = async () => {
-      const dashboard = await api.post('/dashboards', { body: { title: 'New dashboard' } })
+      const dashboard = await api.post('/dashboards', { body: { title: t('dashboards.newTitle') } })
       dashboards.set((all) => [...all, dashboard])
       navigate(editHref(dashboard.id))
     }
@@ -49,11 +52,11 @@ export const dashboardList = component('beacon-dashboard-list', {
     const remove = async (item) => {
       const choice = await notify({
         kind: 'warning',
-        title: `Delete "${item.title}"?`,
-        description: 'Its panels are deleted with it.',
-        actions: [{ id: 'delete', label: 'Delete', variant: 'danger' }, {
+        title: t('dashboards.confirmDelete', { title: item.title }),
+        description: t('dashboards.confirmDeleteDescription'),
+        actions: [{ id: 'delete', label: t('common.delete'), variant: 'danger' }, {
           id: 'keep',
-          label: 'Keep',
+          label: t('dashboards.keep'),
         }],
         duration: 0,
         ttl: 0,
@@ -61,26 +64,30 @@ export const dashboardList = component('beacon-dashboard-list', {
       if (choice !== 'delete') return
       await api.delete(`/dashboards/${item.id}`)
       dashboards.set((all) => all.filter((dashboard) => dashboard.id !== item.id))
-      notify({ kind: 'success', title: `"${item.title}" deleted`, ttl: 0 })
+      notify({ kind: 'success', title: t('dashboards.deleted', { title: item.title }), ttl: 0 })
     }
 
     return stack(
       { gap: 4 },
       flex(
         { horizontalAlign: 'justify', verticalAlign: 'center' },
-        heading('Dashboards'),
+        heading(say('dashboards.title')),
         button(
           { variant: 'primary', events: { click: create } },
           icon(luPlus, { size: 'sm' }),
-          'New dashboard',
+          say('dashboards.create'),
         ),
       ),
-      textField({
-        value: search,
-        type: 'search',
-        ariaLabel: 'Search dashboards',
-        placeholder: 'Search by title or tag',
-      }),
+      // ariaLabel and placeholder are plain strings: the field is built again
+      // on a language switch, and keeps the search, which lives in a state.
+      lang.view(() =>
+        textField({
+          value: search,
+          type: 'search',
+          ariaLabel: t('dashboards.search'),
+          placeholder: t('dashboards.searchPlaceholder'),
+        })
+      ),
       // `undefined` means not loaded yet: show a skeleton, not "empty".
       computed([dashboards, items], (all, shown) => {
         if (all === undefined) return 'loading'
@@ -88,23 +95,28 @@ export const dashboardList = component('beacon-dashboard-list', {
       }).view((status) => {
         if (status === 'loading') return skeleton({ lines: 6 })
         if (status === 'empty') {
-          return emptyState({ variant: 'noResults', description: 'Try another search.' })
+          return emptyState({ variant: 'noResults', description: message('dashboards.noMatch') })
         }
         return list({
-          label: 'Dashboards',
+          label: message('dashboards.title'),
           items,
           actions: (item) =>
             menuButton({
               variant: 'ghost',
-              label: `Actions for ${item.title}`,
+              label: message('dashboards.actions', { title: item.title }),
               items: [
                 {
                   id: 'edit',
-                  label: 'Edit',
+                  label: message('common.edit'),
                   icon: luPencil,
                   onClick: () => navigate(editHref(item.id)),
                 },
-                { id: 'delete', label: 'Delete', icon: luTrash2, onClick: () => remove(item) },
+                {
+                  id: 'delete',
+                  label: message('common.delete'),
+                  icon: luTrash2,
+                  onClick: () => remove(item),
+                },
               ],
             }),
         })

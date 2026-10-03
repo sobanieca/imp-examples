@@ -1,4 +1,5 @@
 import { component } from 'imp'
+import { t } from 'imp/i18n'
 import { useHttpClient } from 'imp/http'
 import { notify } from 'imp/std/feedback'
 import { app } from './app-map.js'
@@ -23,7 +24,7 @@ export const alertFeed = component('beacon-alert-feed', {
           description: alert.description,
           link: {
             href: app.dashboards.$dashboardId.href({ dashboardId: alert.dashboardId }),
-            label: 'Open the dashboard',
+            label: t('alerts.open'),
           },
         })
       }

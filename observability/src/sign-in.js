@@ -1,4 +1,5 @@
 import { component } from 'imp'
+import { t } from 'imp/i18n'
 import { useHttpClient } from 'imp/http'
 import { navigate, useRoute } from 'imp/router'
 import { useState } from 'imp/state'
@@ -7,6 +8,7 @@ import { card } from 'imp/std/display'
 import { form, FormError, textField } from 'imp/std/inputs'
 import { stack } from 'imp/std/layout'
 import { app } from './app-map.js'
+import { message, say } from './i18n.js'
 import { submitButton } from './submit-button.js'
 import { writeToken } from './token.js'
 
@@ -27,7 +29,7 @@ export const signInPage = component('beacon-sign-in', {
       try {
         user = await api.post('/session', { body: credentials })
       } catch (error) {
-        throw new FormError('Wrong email or password', { cause: error })
+        throw new FormError(t('signIn.failed'), { cause: error })
       }
       writeToken(user.token)
       session.set(user)
@@ -40,14 +42,24 @@ export const signInPage = component('beacon-sign-in', {
         { gap: 5 },
         stack(
           { gap: 2, horizontalAlign: 'center' },
-          heading({ align: 'center' }, 'Sign in to Beacon'),
-          text({ tone: 'secondary', align: 'center' }, 'Any email works. The password is "admin".'),
+          heading({ align: 'center' }, say('signIn.title')),
+          text({ tone: 'secondary', align: 'center' }, say('signIn.hint')),
         ),
         form(
           { initialValues: { email: 'grace@beacon.dev', password: '' }, onSubmit: signIn },
-          textField({ field: 'email', type: 'email', label: 'Email', required: true }),
-          textField({ field: 'password', type: 'password', label: 'Password', required: true }),
-          submitButton('Sign in'),
+          textField({
+            field: 'email',
+            type: 'email',
+            label: message('signIn.email'),
+            required: true,
+          }),
+          textField({
+            field: 'password',
+            type: 'password',
+            label: message('signIn.password'),
+            required: true,
+          }),
+          submitButton(say('signIn.submit')),
         ),
       ),
     )

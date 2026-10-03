@@ -67,7 +67,7 @@ export const dashboards = [
       panel('p1', 'Error rate', 'stat', 'prometheus', 'error_rate', 'small'),
       panel('p2', 'CPU', 'stat', 'prometheus', 'cpu_usage', 'small'),
       panel('p3', 'DB connections', 'stat', 'orders-db', 'active_connections', 'small'),
-      panel('p4', 'Requests per second', 'line', 'prometheus', 'http_requests', 'full'),
+      panel('p4', 'Requests per second', 'timeseries', 'prometheus', 'http_requests', 'full'),
       panel('p5', 'Latency p95 per app', 'column', 'prometheus', 'http_latency_p95', 'medium'),
       panel('p6', 'CPU per node', 'table', 'prometheus', 'cpu_usage', 'small'),
       panel('p7', 'Application logs', 'logs', 'loki', 'app_logs', 'full'),
@@ -90,7 +90,7 @@ export const dashboards = [
     description: 'Nodes, memory and serverless functions',
     tags: ['infra', 'production'],
     panels: [
-      panel('p1', 'CPU', 'line', 'prometheus', 'cpu_usage', 'medium'),
+      panel('p1', 'CPU', 'timeseries', 'prometheus', 'cpu_usage', 'medium'),
       panel('p2', 'Memory', 'stat', 'prometheus', 'memory_usage', 'small'),
       panel('p3', 'Memory per node', 'bar', 'prometheus', 'memory_usage', 'medium'),
       panel('p4', 'Lambda invocations', 'column', 'cloudwatch', 'lambda_invocations', 'small'),
