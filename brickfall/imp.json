@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "pwa": {
+    "name": "Brickfall",
+    "shortName": "Brickfall",
+    "icon": "icon.svg",
+    "themeColor": "#0b1026",
+    "backgroundColor": "#0b1026",
+    "display": "fullscreen"
+  }
+}
