@@ -10,6 +10,28 @@ framework other than imp.
 | [`shop/`](shop/)                   | **Impulse**, a shop rendered by Hono on Deno                | imp components as islands in server-rendered HTML                                                        |
 | [`brickfall/`](brickfall/)         | **Brickfall**, a brick breaker game on a canvas             | a PWA from one `imp.json` block: manifest, icon set, offline service worker, install prompt              |
 
+## Live demos
+
+Two of the apps are hosted on GitHub Pages, at
+[sobanieca.github.io/imp-examples](https://sobanieca.github.io/imp-examples/):
+
+- [Beacon](https://sobanieca.github.io/imp-examples/observability/) - the
+  observability SPA. The hosted build has no backend, because mocks serve only in
+  `imp start`. So it shows the sign-in page, and sign-in fails. Run it locally to
+  use the mocked API.
+- [Brickfall](https://sobanieca.github.io/imp-examples/brickfall/) - the game.
+  It installs as a PWA and plays offline.
+
+The shop renders on a server, so it runs locally only.
+
+`.github/workflows/pages.yml` builds and deploys the site on each push to `main`.
+Each app builds with its `pages` environment (`env/pages.json`), which sets
+`IMP_BASEPATH` to its sub-path. To host a fork, enable Pages in the repository
+settings with the source "GitHub Actions", and change `IMP_BASEPATH` to match
+the name of your repository.
+
+## Run locally
+
 You need the `imp` binary on your `PATH`. The shop also needs
 [Deno](https://deno.com/).
 

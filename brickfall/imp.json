@@ -7,5 +7,8 @@
     "themeColor": "#0b1026",
     "backgroundColor": "#0b1026",
     "display": "fullscreen"
+  },
+  "environments": {
+    "pages": "env/pages.json"
   }
 }

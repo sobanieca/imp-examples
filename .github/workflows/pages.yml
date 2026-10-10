@@ -1,0 +1,67 @@
+# Builds the observability and brickfall examples and hosts them on GitHub Pages:
+#   https://sobanieca.github.io/imp-examples/              the list of demos (pages/index.html)
+#   https://sobanieca.github.io/imp-examples/observability/
+#   https://sobanieca.github.io/imp-examples/brickfall/
+# The shop renders on a server, so it is not part of the site.
+# Each app builds with its "pages" environment, which sets IMP_BASEPATH to its sub-path.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install imp
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -fsSL https://sobanieca.github.io/imp-ui/install.sh | INSTALL_DIR="$HOME/.local/bin" bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Build observability
+        working-directory: observability
+        run: imp build --env pages
+
+      - name: Build brickfall
+        working-directory: brickfall
+        run: imp build --pwa --env pages
+
+      - name: Assemble the site
+        # GitHub Pages has no SPA fallback. It answers an unknown path with the 404.html at the
+        # root of the site, so a copy of the observability page there lets its router take a deep
+        # link such as /imp-examples/observability/dashboards/system. A missing chunk still gets a
+        # 404 status. Brickfall has one screen and no routes, so it needs no fallback.
+        run: |
+          mkdir _site
+          cp -r pages/. _site/
+          cp -r observability/dist _site/observability
+          cp -r brickfall/dist _site/brickfall
+          cp _site/observability/index.html _site/404.html
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
