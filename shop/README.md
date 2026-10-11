@@ -1,14 +1,15 @@
 # Impulse - server-rendered pages with imp islands
 
-A shop where [Hono](https://hono.dev/) on Deno renders every page as HTML. imp
+A shop where [Hono](https://hono.dev/) on Node.js renders every page as HTML. imp
 runs only where the page is interactive: the cart, the add-to-cart buttons and
 the notification center. The pages work and read fine before any JavaScript
 arrives.
 
 ```
-deno task dev      # builds the islands, rebuilds them on change, runs the server on :8000
-deno task build    # imp build islands/main.js -> public/islands/main.js
-deno task start    # runs the server; build the islands first
+npm install        # installs Hono and its Node.js adapter
+npm run dev        # builds the islands, rebuilds them on change, runs the server on :8000
+npm run build      # imp build islands/main.js -> public/islands/main.js
+npm start          # runs the server; build the islands first
 ```
 
 ## How it fits together
