@@ -1,4 +1,4 @@
-import { html } from '@hono/hono/html'
+import { html } from 'hono/html'
 import { CATEGORIES } from './store.js'
 
 const money = (amount) =>
@@ -44,7 +44,7 @@ export const layout = ({ title, description, cart, inbox, category, body }) => {
     </header>
     <main>${body}</main>
     <footer class="site-footer">
-      Pages rendered by Hono on Deno. The cart, the buttons and the notifications are imp islands.
+      Pages rendered by Hono on Node.js. The cart, the buttons and the notifications are imp islands.
     </footer>
   </body>
 </html>`

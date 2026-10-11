@@ -1,7 +1,8 @@
-import { Hono } from '@hono/hono'
-import { getCookie, setCookie } from '@hono/hono/cookie'
-import { serveStatic } from '@hono/hono/deno'
-import { streamSSE } from '@hono/hono/streaming'
+import { serve } from '@hono/node-server'
+import { serveStatic } from '@hono/node-server/serve-static'
+import { Hono } from 'hono'
+import { getCookie, setCookie } from 'hono/cookie'
+import { streamSSE } from 'hono/streaming'
 import {
   addToCart,
   cartOf,
@@ -124,4 +125,4 @@ app.notFound((c) =>
   )
 )
 
-Deno.serve({ port: Number(Deno.env.get('PORT') ?? 8000) }, app.fetch)
+serve({ fetch: app.fetch, port: Number(process.env.PORT ?? 8000) })

@@ -1,0 +1,15 @@
+{
+  "name": "impulse-shop",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node dev.js",
+    "build": "imp build islands/main.js --output public/islands",
+    "start": "node server/main.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.4",
+    "hono": "^4.13.13"
+  }
+}
