@@ -37,7 +37,7 @@ You need the `imp` binary on your `PATH`. The shop also needs
 [Node.js](https://nodejs.org/) 22 or later.
 
 ```
-cd observability && imp start            # http://localhost:4507, sign in with any email and "admin"
+cd observability && imp start            # http://localhost:4400, sign in with any email and "admin"
 cd shop && npm install && npm run dev    # http://localhost:8000
-cd brickfall && imp start                # http://localhost:4507, then imp build --pwa for the offline app
+cd brickfall && imp start                # http://localhost:4400, then imp build --pwa for the offline app
 ```

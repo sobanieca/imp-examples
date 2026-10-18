@@ -5,7 +5,7 @@ three levels of bricks (steel ones take two hits), and keep your best score. It 
 Web App. It installs to a home screen or a desktop, opens fullscreen, and plays with no network.
 
 ```
-imp start          # http://localhost:4507 - installable already, not yet offline
+imp start          # http://localhost:4400 - installable already, not yet offline
 imp build --pwa    # dist/: the game, its manifest, its icons and an offline service worker
 imp test --unit    # the game rules, with no DOM
 imp test --e2e     # the page in Chrome: board, manifest, pause, offline notice

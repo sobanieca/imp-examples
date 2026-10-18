@@ -6,7 +6,7 @@ There is no backend. Every request is answered by the `*.mock.js` files in
 `mocks/`, through imp's dev server.
 
 ```
-imp start          # http://localhost:4507 - any email, password "admin"
+imp start          # http://localhost:4400 - any email, password "admin"
 imp test --e2e     # the browser spec, fed by the same mocks
 imp test --unit    # the unit tests: en and pl carry the same keys
 imp build          # the static production build in dist/
