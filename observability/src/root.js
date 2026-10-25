@@ -19,8 +19,8 @@ import { signInPage } from './sign-in.js'
 import { themeChoices } from './theme.js'
 import { readToken, writeToken } from './token.js'
 
-// One guard for every node with `access` in the map: wait for the session,
-// then let the user in or send them to the sign-in page.
+// One guard for every node with a `need`: wait for the session, then let the
+// user in or send them to the sign-in page.
 const access = guard(['beacon.session'], (session, { path }) => {
   if (session === undefined) return wait
   return Boolean(session) || `${app.signIn.href()}?next=${encodeURIComponent(path)}`
@@ -30,7 +30,6 @@ export const root = component('beacon-root', {
   setup: (self) => {
     const session = initState(self, 'beacon.session')
     const dashboards = initState(self, 'beacon.dashboards')
-    const dashboardOptions = initState(self, 'beacon.dashboardOptions', [])
 
     const api = initHttpClient(self, 'beacon.api', {
       baseUrl: '/api',
@@ -46,14 +45,6 @@ export const root = component('beacon-root', {
       session.set(null)
     })
     session.watch(self, (user) => user && api.get('/dashboards').then(dashboards.set))
-    // The crumb of a dashboard gets a picker to jump to any other dashboard.
-    dashboards.watch(
-      self,
-      (list) =>
-        dashboardOptions.set(
-          (list ?? []).map((dashboard) => ({ value: dashboard.id, label: dashboard.title })),
-        ),
-    )
 
     lang.watch(self, writeLang)
 
@@ -71,6 +62,7 @@ export const root = component('beacon-root', {
         }),
         navbar: {
           map: app,
+          hide: [app.home, app.signIn, app.dashboards.$dashboardId.edit],
           icons: { [app.dashboards]: luLayoutDashboard, [app.connectors]: luPlug },
         },
         extras: [
@@ -102,6 +94,7 @@ export const root = component('beacon-root', {
       router({
         map: app,
         access,
+        need: { [app.dashboards]: 'user', [app.connectors]: 'user' },
         screens: {
           [app.home]: redirect(app.dashboards),
           [app.signIn]: () => signInPage(),
@@ -111,7 +104,6 @@ export const root = component('beacon-root', {
             dashboardEdit({ id: params.dashboardId }),
           [app.connectors]: () => connectorList(),
         },
-        options: { [app.dashboards.$dashboardId]: 'beacon.dashboardOptions' },
         title: ({ crumbs }) => `${crumbs.at(-1)} - Beacon`,
         notFound: () => emptyState({ variant: 'noResults', title: message('shell.notFound') }),
       }),

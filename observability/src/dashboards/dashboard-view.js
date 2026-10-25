@@ -3,7 +3,7 @@ import { lang, t } from 'imp/i18n'
 import { luPencil, luRefreshCw, luSearch } from 'imp/icons'
 import { useHttpClient } from 'imp/http'
 import { navigate } from 'imp/router'
-import { computed, initState } from 'imp/state'
+import { computed, initState, useState } from 'imp/state'
 import { button, heading, icon, text } from 'imp/std'
 import { emptyState, tag, tooltip } from 'imp/std/display'
 import { skeleton } from 'imp/std/feedback'
@@ -57,6 +57,7 @@ export const dashboardView = component('beacon-dashboard-view', {
     })
 
     const dashboard = await api.get(`/dashboards/${id}`)
+    useState(self, 'imp.routeLabels').set((all) => ({ ...all, $dashboardId: dashboard.title }))
     const edit = () => navigate(app.dashboards.$dashboardId.edit.href({ dashboardId: id }))
 
     return stack(

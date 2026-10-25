@@ -9,7 +9,6 @@ export default {
       label: 'Dashboards',
       description: 'Every dashboard of the team',
       $dashboardId: {
-        label: 'Dashboard',
         description: 'Live panels of one dashboard',
         edit: {
           label: 'Edit',

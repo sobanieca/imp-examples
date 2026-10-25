@@ -192,16 +192,19 @@ export const dashboardEdit = component('beacon-dashboard-edit', {
   setup: async (self, { id }) => {
     const api = useHttpClient(self, 'beacon.api')
     const dashboards = useState(self, 'beacon.dashboards')
+    const labels = useState(self, 'imp.routeLabels')
     const [dashboard, connectors] = await Promise.all([
       api.get(`/dashboards/${id}`),
       api.get('/connectors'),
     ])
+    labels.set((all) => ({ ...all, $dashboardId: dashboard.title }))
     const tags = [...new Set((dashboards.get() ?? []).flatMap((one) => one.tags))]
 
     let saved = false
     const save = async (values) => {
       const updated = await api.put(`/dashboards/${id}`, { body: values })
       dashboards.set((all) => (all ?? []).map((one) => (one.id === id ? updated : one)))
+      labels.set((all) => ({ ...all, $dashboardId: updated.title }))
       saved = true
       notify({ kind: 'success', title: t('editor.saved'), ttl: 0 })
       navigate(app.dashboards.$dashboardId.href({ dashboardId: id }))

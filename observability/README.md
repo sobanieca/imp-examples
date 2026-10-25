@@ -20,13 +20,13 @@ npm package vendored with `imp install`.
 
 | File                               | Shows                                                                         |
 | ---------------------------------- | ----------------------------------------------------------------------------- |
-| `src/app-map.js`                   | the whole app as one map: nav, routes, access, breadcrumbs                    |
-| `src/root.js`                      | `shell`, `router`, the `access` guard, the HTTP client, the crumb picker      |
+| `src/app-map.js`                   | the whole app as one plain map: its nodes and their descriptions              |
+| `src/root.js`                      | `shell`, `router`, the `access` guard and its `need`, the HTTP client         |
 | `src/sign-in.js`                   | `form`, `FormError`, redirect back to `?next=` after sign-in                  |
 | `src/i18n.js`, `src/locales/`      | translations: loaders, live messages, plurals, locale-aware number formats    |
 | `src/dashboards/panel.js`          | one component per panel; `chart`, `progress` gauge and `table` with live data |
 | `src/dashboards/time-series.js`    | an npm package in a component: uPlot drawn with theme tokens and `lang`       |
-| `src/dashboards/dashboard-view.js` | time range, refresh and auto refresh, all through one `computed` value        |
+| `src/dashboards/dashboard-view.js` | time range, refresh and auto refresh through one `computed`; the crumb label  |
 | `src/dashboards/dashboard-edit.js` | the dashboard as one form, panels included; `beforeLeave` for unsaved work    |
 | `src/dashboards/panel-editor.js`   | a nested form in a `dialog`, with a live preview of the panel                 |
 | `src/connectors/connector-list.js` | `table` with rendered cells, per-row loading state, an add dialog             |

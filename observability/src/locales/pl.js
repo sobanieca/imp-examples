@@ -64,7 +64,6 @@ export default {
       label: 'Pulpity',
       description: 'Wszystkie pulpity zespołu',
       $dashboardId: {
-        label: 'Pulpit',
         description: 'Panele jednego pulpitu na żywo',
         edit: {
           label: 'Edycja',
