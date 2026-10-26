@@ -3,7 +3,7 @@
 export default {
   // The nav, the trail and the page title read the map's labels from here.
   appMap: {
-    home: { label: 'Home' },
+    label: 'Home',
     signIn: { label: 'Sign in', description: 'Sign in to Beacon' },
     dashboards: {
       label: 'Dashboards',

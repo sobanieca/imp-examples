@@ -1,7 +1,6 @@
 import { appMap } from 'imp'
 
 export const app = appMap({
-  home: {},
   signIn: 'Sign in to Beacon',
   dashboards: {
     description: 'Every dashboard of the team',

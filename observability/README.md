@@ -21,7 +21,7 @@ npm package vendored with `imp install`.
 | File                               | Shows                                                                         |
 | ---------------------------------- | ----------------------------------------------------------------------------- |
 | `src/app-map.js`                   | the whole app as one plain map: its nodes and their descriptions              |
-| `src/root.js`                      | `shell`, `router`, the `access` guard and its `need`, the HTTP client         |
+| `src/root.js`                      | `shell` with `nav`, `router` with the guard of the root, the HTTP client      |
 | `src/sign-in.js`                   | `form`, `FormError`, redirect back to `?next=` after sign-in                  |
 | `src/i18n.js`, `src/locales/`      | translations: loaders, live messages, plurals, locale-aware number formats    |
 | `src/dashboards/panel.js`          | one component per panel; `chart`, `progress` gauge and `table` with live data |

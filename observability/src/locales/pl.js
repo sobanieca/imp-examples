@@ -58,7 +58,7 @@ export default {
     comboBox: { noMatches: 'Brak dopasowań', searching: 'Wyszukiwanie', remove: 'Usuń {label}' },
   },
   appMap: {
-    home: { label: 'Start' },
+    label: 'Start',
     signIn: { label: 'Logowanie', description: 'Zaloguj się do Beacon' },
     dashboards: {
       label: 'Pulpity',

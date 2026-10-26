@@ -2,7 +2,7 @@ import { component } from 'imp'
 import { lang } from 'imp/i18n'
 import { luActivity, luLayoutDashboard, luLogOut, luPlug } from 'imp/icons'
 import { initHttpClient } from 'imp/http'
-import { guard, redirect, router, wait } from 'imp/router'
+import { redirect, router, wait } from 'imp/router'
 import { initState } from 'imp/state'
 import { icon, menuButton } from 'imp/std'
 import { emptyState } from 'imp/std/display'
@@ -19,12 +19,16 @@ import { signInPage } from './sign-in.js'
 import { themeChoices } from './theme.js'
 import { readToken, writeToken } from './token.js'
 
-// One guard for every node with a `need`: wait for the session, then let the
-// user in or send them to the sign-in page.
-const access = guard(['beacon.session'], (session, { path }) => {
-  if (session === undefined) return wait
-  return Boolean(session) || `${app.signIn.href()}?next=${encodeURIComponent(path)}`
-})
+// The guard of the root covers every node: the sign-in page is open, the rest
+// waits for the session, then lets the user in or sends them to sign in.
+const signedIn = {
+  states: ['beacon.session'],
+  check: (session, { node, path }) => {
+    if (node === app.signIn) return true
+    if (session === undefined) return wait
+    return Boolean(session) || `${app.signIn.href()}?next=${encodeURIComponent(path)}`
+  },
+}
 
 export const root = component('beacon-root', {
   setup: (self) => {
@@ -60,10 +64,12 @@ export const root = component('beacon-root', {
           tagline: message('shell.tagline'),
           icon: icon(luActivity, { size: 'lg', color: 'primary' }),
         }),
-        navbar: {
-          map: app,
-          hide: [app.home, app.signIn, app.dashboards.$dashboardId.edit],
-          icons: { [app.dashboards]: luLayoutDashboard, [app.connectors]: luPlug },
+        map: app,
+        nav: {
+          [app.signIn]: { hidden: true },
+          [app.dashboards]: { icon: luLayoutDashboard },
+          [app.dashboards.$dashboardId.edit]: { hidden: true },
+          [app.connectors]: { icon: luPlug },
         },
         extras: [
           notifications({ variant: 'ghost' }),
@@ -93,10 +99,9 @@ export const root = component('beacon-root', {
       session.view((user) => user && alertFeed()),
       router({
         map: app,
-        access,
-        need: { [app.dashboards]: 'user', [app.connectors]: 'user' },
+        guards: { [app]: signedIn },
         screens: {
-          [app.home]: redirect(app.dashboards),
+          [app]: redirect(app.dashboards),
           [app.signIn]: () => signInPage(),
           [app.dashboards]: () => dashboardList(),
           [app.dashboards.$dashboardId]: ({ params }) => dashboardView({ id: params.dashboardId }),
