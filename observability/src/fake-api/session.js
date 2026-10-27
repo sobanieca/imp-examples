@@ -5,9 +5,9 @@ const userFrom = (authorization) => {
   return email ? { email, name: email.split('@')[0] } : null
 }
 
-export const mocks = [
+export const routes = [
   {
-    match: (request) => request.method === 'POST' && request.path === '/api/session',
+    route: 'POST /session',
     delay: 500,
     handler: ({ body }) => {
       if (body.password !== 'admin') return { status: 401, body: { message: 'Wrong password' } }
@@ -15,7 +15,7 @@ export const mocks = [
     },
   },
   {
-    match: (request) => request.method === 'GET' && request.path === '/api/session',
+    route: 'GET /session',
     handler: ({ headers }) => {
       const user = userFrom(headers.authorization)
       return user ? { body: user } : { status: 401, body: { message: 'Not signed in' } }

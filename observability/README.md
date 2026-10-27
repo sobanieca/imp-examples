@@ -2,12 +2,13 @@
 
 A small Grafana: sign in, browse dashboards, watch live panels, edit a dashboard
 and its panels, and manage the connectors (data sources) that the panels query.
-There is no backend. Every request is answered by the `*.mock.js` files in
-`mocks/`, through imp's dev server.
+There is no backend. Every request to `/api` is answered by a fake API in
+`src/fake-api/` that runs in the page, so the static build works on any host,
+such as GitHub Pages, with no server behind it.
 
 ```
 imp start          # http://localhost:4400 - any email, password "admin"
-imp test --e2e     # the browser spec, fed by the same mocks
+imp test --e2e     # the browser spec, fed by the same fake API
 imp test --unit    # the unit tests: en and pl carry the same keys
 imp build          # the static production build in dist/
 ```
@@ -31,7 +32,7 @@ npm package vendored with `imp install`.
 | `src/dashboards/panel-editor.js`   | a nested form in a `dialog`, with a live preview of the panel                 |
 | `src/connectors/connector-list.js` | `table` with rendered cells, per-row loading state, an add dialog             |
 | `src/alert-feed.js`                | a component with no DOM that polls alerts and feeds the `notifications` bell  |
-| `mocks/`                           | an in-memory backend: sessions, dashboards, connectors, queries, alerts       |
+| `src/fake-api/`                    | an in-page backend: sessions, dashboards, connectors, queries, alerts         |
 
 The CloudWatch connector is broken on purpose, so you can see a failing panel
 and a failing test.

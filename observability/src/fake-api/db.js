@@ -1,5 +1,5 @@
-// The in-memory backend behind the mocks. imp loads the mock files once per
-// run, so these arrays remember every change until you restart `imp start`.
+// The in-memory backend behind the fake API. It lives in the page, so these
+// arrays remember every change until the page reloads.
 
 export const connectors = [
   {
@@ -99,7 +99,10 @@ export const dashboards = [
 ]
 
 const slug = (text) =>
-  text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'item'
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '') || 'item'
 
 export const uniqueId = (list, text) => {
   const base = slug(text)

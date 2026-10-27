@@ -1,17 +1,16 @@
 import { connectors, metrics, uniqueId } from './db.js'
 
-const idOf = (path) => path.split('/')[3]
-const find = (path) => connectors.find((connector) => connector.id === idOf(path))
+const find = (id) => connectors.find((connector) => connector.id === id)
 const notFound = { status: 404, body: { message: 'No such connector' } }
 
-export const mocks = [
+export const routes = [
   {
-    match: (request) => request.method === 'GET' && request.path === '/api/connectors',
+    route: 'GET /connectors',
     delay: 300,
     handler: () => ({ body: connectors }),
   },
   {
-    match: (request) => request.method === 'POST' && request.path === '/api/connectors',
+    route: 'POST /connectors',
     delay: 500,
     handler: ({ body }) => {
       const connector = { ...body, id: uniqueId(connectors, body.name) }
@@ -21,10 +20,9 @@ export const mocks = [
     },
   },
   {
-    match: (request) =>
-      request.method === 'DELETE' && /^\/api\/connectors\/[^/]+$/.test(request.path),
-    handler: ({ path }) => {
-      const index = connectors.indexOf(find(path))
+    route: 'DELETE /connectors/:id',
+    handler: ({ params }) => {
+      const index = connectors.indexOf(find(params.id))
       if (index === -1) return notFound
       connectors.splice(index, 1)
       return { status: 204 }
@@ -32,10 +30,10 @@ export const mocks = [
   },
   {
     // Testing a connection: CloudWatch is down, everything else answers.
-    match: (request) => request.method === 'POST' && request.path.endsWith('/test'),
+    route: 'POST /connectors/:id/test',
     delay: 900,
-    handler: ({ path }) => {
-      const connector = find(path)
+    handler: ({ params }) => {
+      const connector = find(params.id)
       if (!connector) return notFound
       if (connector.type === 'cloudwatch') {
         return { status: 502, body: { message: `${connector.name}: connection refused` } }
@@ -44,10 +42,10 @@ export const mocks = [
     },
   },
   {
-    match: (request) => request.method === 'GET' && request.path.endsWith('/metrics'),
+    route: 'GET /connectors/:id/metrics',
     delay: 200,
-    handler: ({ path }) => {
-      const connector = find(path)
+    handler: ({ params }) => {
+      const connector = find(params.id)
       if (!connector) return notFound
       return { body: Object.keys(metrics[connector.type] ?? {}) }
     },

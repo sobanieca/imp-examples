@@ -25,9 +25,9 @@ const RULES = [
 const firing = []
 let calls = 0
 
-export const mocks = [
+export const routes = [
   {
-    match: (request) => request.method === 'GET' && request.path === '/api/alerts',
+    route: 'GET /alerts',
     handler: () => {
       calls++
       // The second poll fires an alert, then every third poll fires another.

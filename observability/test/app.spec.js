@@ -1,6 +1,6 @@
 import { expect, test } from 'imp/test'
 
-// The mocks answer every request, so the suite runs with no backend.
+// The fake API in src/fake-api/ answers every request, so the suite runs with no backend.
 
 test('signs in and lists the dashboards', async ({ page }) => {
   await page.waitForSelector('input[type=password]')

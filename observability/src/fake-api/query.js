@@ -30,9 +30,9 @@ const logs = () =>
     message: MESSAGES[Math.floor(Math.random() * MESSAGES.length)],
   }))
 
-export const mocks = [
+export const routes = [
   {
-    match: (request) => request.method === 'GET' && request.path === '/api/query',
+    route: 'GET /query',
     delay: 400,
     handler: ({ query }) => {
       const connector = connectors.find((item) => item.id === query.connectorId)
