@@ -14,13 +14,13 @@ its pages.
 ## Live demos
 
 Two of the apps are hosted on GitHub Pages, at
-[sobanieca.github.io/imp-examples](https://sobanieca.github.io/imp-examples/):
+[adam.sobaniec.com/imp-examples](https://adam.sobaniec.com/imp-examples/):
 
-- [Beacon](https://sobanieca.github.io/imp-examples/observability/) - the
+- [Beacon](https://adam.sobaniec.com/imp-examples/observability/) - the
   observability SPA. It has no backend: a fake API in the page answers its
   requests, so sign in with any email and the password "admin". Changes last
   until the page reloads.
-- [Brickfall](https://sobanieca.github.io/imp-examples/brickfall/) - the game.
+- [Brickfall](https://adam.sobaniec.com/imp-examples/brickfall/) - the game.
   It installs as a PWA and plays offline.
 
 The shop renders on a server, so it runs locally only.

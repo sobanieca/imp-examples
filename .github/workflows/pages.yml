@@ -1,7 +1,7 @@
 # Builds the observability and brickfall examples and hosts them on GitHub Pages:
-#   https://sobanieca.github.io/imp-examples/              the list of demos (pages/index.html)
-#   https://sobanieca.github.io/imp-examples/observability/
-#   https://sobanieca.github.io/imp-examples/brickfall/
+#   https://adam.sobaniec.com/imp-examples/              the list of demos (pages/index.html)
+#   https://adam.sobaniec.com/imp-examples/observability/
+#   https://adam.sobaniec.com/imp-examples/brickfall/
 # The shop renders on a server, so it is not part of the site.
 # Each app builds with its "pages" environment, which sets IMP_BASEPATH to its sub-path.
 name: Pages
@@ -29,7 +29,7 @@ jobs:
       - name: Install imp
         run: |
           mkdir -p "$HOME/.local/bin"
-          curl -fsSL https://sobanieca.github.io/imp-ui/install.sh | INSTALL_DIR="$HOME/.local/bin" bash
+          curl -fsSL https://imp-ui.com/install.sh | INSTALL_DIR="$HOME/.local/bin" bash
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Build observability
