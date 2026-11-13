@@ -8,6 +8,18 @@
     <link rel="canonical" href="https://examples.imp-ui.com/" />
     <link rel="icon" href="mark-dark.svg" type="image/svg+xml" />
     <link rel="preload" href="fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
+    <script>
+      let scheme = null
+      try {
+        scheme = localStorage.getItem('imp.examples.scheme')
+      } catch {
+        scheme = null
+      }
+      if (scheme !== 'light' && scheme !== 'dark') {
+        scheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      }
+      document.documentElement.dataset.scheme = scheme
+    </script>
     <style>
       @font-face {
         font-family: 'IBM Plex Sans';
@@ -55,8 +67,20 @@
         color-scheme: light;
       }
 
+      :root[data-scheme='dark'] {
+        --text: #fafafa;
+        --secondary: #a3a3ad;
+        --primary: #fafafa;
+        --on-primary: #101010;
+        --surface: #18181b;
+        --surface-sunken: #222226;
+        --border: #2e2e33;
+        --background: #101010;
+        color-scheme: dark;
+      }
+
       @media (prefers-color-scheme: dark) {
-        :root {
+        :root:not([data-scheme]) {
           --text: #fafafa;
           --secondary: #a3a3ad;
           --primary: #fafafa;
@@ -134,6 +158,37 @@
 
       .links a:hover {
         color: #ffffff;
+      }
+
+      .scheme {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        align-self: center;
+        flex: none;
+        inline-size: 32px;
+        block-size: 32px;
+        margin-inline-start: calc(var(--space-6) * -1 + var(--space-3));
+        padding: 0;
+        border: 0;
+        border-radius: var(--radius-item);
+        background: transparent;
+        color: #ffffff;
+        cursor: pointer;
+      }
+
+      .scheme:hover {
+        background: #2a2a2e;
+      }
+
+      .scheme svg {
+        inline-size: 1rem;
+        block-size: 1rem;
+      }
+
+      :root[data-scheme='dark'] .scheme .moon,
+      :root:not([data-scheme='dark']) .scheme .sun {
+        display: none;
       }
 
       .bars {
@@ -342,6 +397,11 @@
         outline-offset: 2px;
       }
 
+      .scheme:focus-visible {
+        outline: 2px solid #ffffff;
+        outline-offset: 2px;
+      }
+
       .bar a:focus-visible {
         outline-color: #ffffff;
       }
@@ -353,6 +413,10 @@
 
         .brand small {
           display: none;
+        }
+
+        .scheme {
+          margin-inline-start: calc(var(--space-4) * -1 + var(--space-2));
         }
 
         .geometry {
@@ -371,6 +435,10 @@
         <li><a href="https://imp-ui.com/docs">Docs</a></li>
         <li><a href="https://github.com/sobanieca/imp-examples">GitHub</a></li>
       </ul>
+      <button class="scheme" type="button" aria-label="Switch the theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </button>
       <div class="bars" aria-hidden="true">
         <div class="main-1"></div>
         <div class="main-2"></div>
@@ -452,5 +520,23 @@
         </ul>
       </main>
     </div>
+    <script>
+      const root = document.documentElement
+      const toggle = document.querySelector('.scheme')
+
+      const label = () =>
+        root.dataset.scheme === 'dark' ? 'Switch to the light theme' : 'Switch to the dark theme'
+
+      toggle.setAttribute('aria-label', label())
+      toggle.addEventListener('click', () => {
+        root.dataset.scheme = root.dataset.scheme === 'dark' ? 'light' : 'dark'
+        toggle.setAttribute('aria-label', label())
+        try {
+          localStorage.setItem('imp.examples.scheme', root.dataset.scheme)
+        } catch {
+          // The choice lasts until the page reloads.
+        }
+      })
+    </script>
   </body>
 </html>
