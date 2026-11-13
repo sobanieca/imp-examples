@@ -180,10 +180,22 @@ export const board = component('brickfall-board', {
     return div(
       div(
         { class: 'hud' },
-        stat('Score', hud.text((value) => String(value.score))),
-        stat('Level', hud.text((value) => String(value.level))),
-        stat('Lives', hud.text((value) => String(value.lives))),
-        stat('Best', hud.text((value) => String(value.best))),
+        stat(
+          'Score',
+          hud.text((value) => String(value.score)),
+        ),
+        stat(
+          'Level',
+          hud.text((value) => String(value.level)),
+        ),
+        stat(
+          'Lives',
+          hud.text((value) => String(value.lives)),
+        ),
+        stat(
+          'Best',
+          hud.text((value) => String(value.best)),
+        ),
         div(
           { class: 'actions' },
           button(
@@ -216,40 +228,60 @@ export const board = component('brickfall-board', {
       const box = self.canvas.getBoundingClientRect()
       return ((event.clientX - box.left) / box.width) * WIDTH
     }
-    self.canvas.addEventListener('pointermove', (event) => {
-      self.input.pointerX = toBoardX(event)
-    }, options)
-    self.canvas.addEventListener('pointerdown', (event) => {
-      self.input.pointerX = toBoardX(event)
-      self.canvas.focus({ preventScroll: true })
-      // A finger on the board steers: only a game waiting for its player takes the tap.
-      if (self.game.phase !== 'playing') self.act()
-    }, options)
+    self.canvas.addEventListener(
+      'pointermove',
+      (event) => {
+        self.input.pointerX = toBoardX(event)
+      },
+      options,
+    )
+    self.canvas.addEventListener(
+      'pointerdown',
+      (event) => {
+        self.input.pointerX = toBoardX(event)
+        self.canvas.focus({ preventScroll: true })
+        // A finger on the board steers: only a game waiting for its player takes the tap.
+        if (self.game.phase !== 'playing') self.act()
+      },
+      options,
+    )
 
-    addEventListener('keydown', (event) => {
-      const direction = KEYS[event.key]
-      if (direction) {
-        self.input[direction] = true
-        self.input.pointerX = null
-        event.preventDefault()
-      } else if (event.key === ' ' || event.key === 'Enter') {
-        // On a focused button these keys press the button.
-        if (fromControl(event)) return
-        if (!event.repeat) self.act()
-        event.preventDefault()
-      } else if (event.key === 'p' || event.key === 'P' || event.key === 'Escape') {
-        togglePause(self.game)
-      }
-    }, options)
-    addEventListener('keyup', (event) => {
-      const direction = KEYS[event.key]
-      if (direction) self.input[direction] = false
-    }, options)
+    addEventListener(
+      'keydown',
+      (event) => {
+        const direction = KEYS[event.key]
+        if (direction) {
+          self.input[direction] = true
+          self.input.pointerX = null
+          event.preventDefault()
+        } else if (event.key === ' ' || event.key === 'Enter') {
+          // On a focused button these keys press the button.
+          if (fromControl(event)) return
+          if (!event.repeat) self.act()
+          event.preventDefault()
+        } else if (event.key === 'p' || event.key === 'P' || event.key === 'Escape') {
+          togglePause(self.game)
+        }
+      },
+      options,
+    )
+    addEventListener(
+      'keyup',
+      (event) => {
+        const direction = KEYS[event.key]
+        if (direction) self.input[direction] = false
+      },
+      options,
+    )
 
     // A game in a background tab, or on a locked phone, waits for its player.
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && self.game.phase === 'playing') togglePause(self.game)
-    }, options)
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (document.hidden && self.game.phase === 'playing') togglePause(self.game)
+      },
+      options,
+    )
 
     // The screen stays on while the ball is in play, as a game should.
     computed([self.phase], (value) => value === 'playing').watch(self, async (playing) => {

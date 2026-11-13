@@ -32,10 +32,7 @@ export const app = component('brickfall-app', {
   setup: () =>
     div(
       { class: 'page' },
-      header(
-        appLogo({ label: 'Brickfall', src: 'favicon.svg', href: null }),
-        pwaStatus(),
-      ),
+      header(appLogo({ label: 'Brickfall', src: 'favicon.svg', href: null }), pwaStatus()),
       main(board()),
     ),
 })

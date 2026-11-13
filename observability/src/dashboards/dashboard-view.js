@@ -1,4 +1,4 @@
-import { component } from 'imp'
+import { component, interval } from 'imp'
 import { lang, t } from 'imp/i18n'
 import { luPencil, luRefreshCw, luSearch } from 'imp/icons'
 import { useHttpClient } from 'imp/http'
@@ -24,7 +24,7 @@ const rangePicker = (range) =>
       value: range,
       ariaLabel: t('dashboard.range'),
       options: RANGES.map((value) => ({ value, label: t(`dashboard.ranges.${value}`) })),
-    })
+    }),
   )
 
 const refreshPicker = (refreshEvery) =>
@@ -36,7 +36,7 @@ const refreshPicker = (refreshEvery) =>
         { value: 'off', label: t('dashboard.refreshOff') },
         ...REFRESH.map((value) => ({ value, label: t(`dashboard.refreshEvery.${value}`) })),
       ],
-    })
+    }),
   )
 
 export const dashboardView = component('beacon-dashboard-view', {
@@ -51,9 +51,10 @@ export const dashboardView = component('beacon-dashboard-view', {
     const query = computed([range, tick], (range, tick) => ({ range, tick }))
     const refresh = () => tick.set((count) => count + 1)
 
+    let stopRefresh
     refreshEvery.watch(self, (seconds) => {
-      clearInterval(self.timer)
-      if (seconds !== 'off') self.timer = setInterval(refresh, seconds * 1000)
+      stopRefresh?.()
+      stopRefresh = seconds === 'off' ? undefined : interval(self, seconds * 1000, refresh)
     })
 
     const dashboard = await api.get(`/dashboards/${id}`)
@@ -87,16 +88,17 @@ export const dashboardView = component('beacon-dashboard-view', {
           button({ events: { click: edit } }, icon(luPencil, { size: 'sm' }), say('common.edit')),
         ),
       ),
-      dashboard.panels.length > 0 ? panelGrid({ panels: dashboard.panels, query }) : emptyState(
-        {
-          title: message('dashboard.noPanels'),
-          description: message('dashboard.noPanelsDescription'),
-        },
-        button({ variant: 'primary', events: { click: edit } }, say('dashboard.addPanel')),
-      ),
+      dashboard.panels.length > 0
+        ? panelGrid({ panels: dashboard.panels, query })
+        : emptyState(
+            {
+              title: message('dashboard.noPanels'),
+              description: message('dashboard.noPanelsDescription'),
+            },
+            button({ variant: 'primary', events: { click: edit } }, say('dashboard.addPanel')),
+          ),
     )
   },
-  onRemove: (self) => clearInterval(self.timer),
   error: () =>
     emptyState({
       icon: luSearch,

@@ -21,8 +21,8 @@ export const addToCart = component('impulse-add-to-cart', {
 
     return flex(
       { gap: 2, verticalAlign: 'center' },
-      withQuantity &&
-        textField({
+      withQuantity
+        && textField({
           value: quantity,
           type: 'number',
           min: 1,

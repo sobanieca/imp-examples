@@ -65,7 +65,7 @@ const dashboardForm = component('beacon-dashboard-form', {
       setPanels((panels) =>
         panels.some((one) => one.id === panel.id)
           ? panels.map((one) => (one.id === panel.id ? panel : one))
-          : [...panels, panel]
+          : [...panels, panel],
       )
       editorOpen.set(false)
     }
@@ -90,7 +90,8 @@ const dashboardForm = component('beacon-dashboard-form', {
         description: `${typeLabel(panel.type)} · ${panel.connectorId} · ${panel.metric}`,
         icon: typeOf(panel).icon,
         tag: { text: widthLabel(panel.width), color: 'gray' },
-      })))
+      })),
+    )
 
     return stack(
       { gap: 4 },
@@ -145,41 +146,38 @@ const dashboardForm = component('beacon-dashboard-form', {
         computed([items], (all) => all.length === 0).view((empty) =>
           empty
             ? emptyState({
-              title: message('editor.noPanels'),
-              description: message('editor.noPanelsDescription'),
-            })
+                title: message('editor.noPanels'),
+                description: message('editor.noPanelsDescription'),
+              })
             : list({
-              label: message('editor.panels'),
-              items,
-              actions: (item) =>
-                flex(
-                  { gap: 1 },
-                  iconButton('editor.moveUp', item.title, luArrowUp, () => move(item.id, -1)),
-                  iconButton('editor.moveDown', item.title, luArrowDown, () => move(item.id, 1)),
-                  iconButton('editor.editPanel', item.title, luPencil, () =>
-                    openEditor(
-                      values.get().panels.find((panel) => panel.id === item.id),
-                    )),
-                  iconButton(
-                    'editor.removePanel',
-                    item.title,
-                    luTrash2,
-                    () => removePanel(item.id),
+                label: message('editor.panels'),
+                items,
+                actions: (item) =>
+                  flex(
+                    { gap: 1 },
+                    iconButton('editor.moveUp', item.title, luArrowUp, () => move(item.id, -1)),
+                    iconButton('editor.moveDown', item.title, luArrowDown, () => move(item.id, 1)),
+                    iconButton('editor.editPanel', item.title, luPencil, () =>
+                      openEditor(values.get().panels.find((panel) => panel.id === item.id)),
+                    ),
+                    iconButton('editor.removePanel', item.title, luTrash2, () =>
+                      removePanel(item.id),
+                    ),
                   ),
-                ),
-            })
+              }),
         ),
       ),
       dialog(
         { title: message('editor.panel'), open: editorOpen },
-        draft.view((panel) =>
-          panel &&
-          panelEditor({
-            panel,
-            connectors,
-            onApply: applyPanel,
-            onCancel: () => editorOpen.set(false),
-          })
+        draft.view(
+          (panel) =>
+            panel
+            && panelEditor({
+              panel,
+              connectors,
+              onApply: applyPanel,
+              onCancel: () => editorOpen.set(false),
+            }),
         ),
       ),
     )

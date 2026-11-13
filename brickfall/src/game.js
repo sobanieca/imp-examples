@@ -25,15 +25,17 @@ const buildBricks = (level) =>
     [...row].flatMap((char, c) => {
       const kind = KINDS[char]
       if (!kind) return []
-      return [{
-        x: LEFT + c * (BRICK.w + BRICK.gap),
-        y: BRICK.top + r * (BRICK.h + BRICK.gap),
-        w: BRICK.w,
-        h: BRICK.h,
-        hp: kind.hits,
-        ...kind,
-      }]
-    })
+      return [
+        {
+          x: LEFT + c * (BRICK.w + BRICK.gap),
+          y: BRICK.top + r * (BRICK.h + BRICK.gap),
+          w: BRICK.w,
+          h: BRICK.h,
+          hp: kind.hits,
+          ...kind,
+        },
+      ]
+    }),
   )
 
 const resetBall = (game) => {

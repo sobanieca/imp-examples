@@ -63,7 +63,7 @@ const panelFields = component('beacon-panel-fields', {
           options: connectors.map((connector) => ({ value: connector.id, label: connector.name })),
         }),
         computed([values], (panel) => panel.connectorId).view((connectorId) =>
-          metricField({ connectorId })
+          metricField({ connectorId }),
         ),
         // Options are read once: a language switch builds these two again.
         // The value is the form's, so nothing is lost.
@@ -72,7 +72,7 @@ const panelFields = component('beacon-panel-fields', {
             field: 'width',
             label: t('panelEditor.width'),
             options: PANEL_WIDTHS.map((value) => ({ value, label: widthLabel(value) })),
-          })
+          }),
         ),
       ),
       div(
@@ -82,14 +82,15 @@ const panelFields = component('beacon-panel-fields', {
             field: 'type',
             label: t('panelEditor.visualization'),
             options: PANEL_TYPES.map(({ value }) => ({ value, label: typeLabel(value) })),
-          })
+          }),
         ),
       ),
       div(
         { class: 'preview' },
-        source.view((panel) =>
-          panel.metric &&
-          panelView({ panel: { ...panel, title: t('panel.preview') }, query: previewQuery })
+        source.view(
+          (panel) =>
+            panel.metric
+            && panelView({ panel: { ...panel, title: t('panel.preview') }, query: previewQuery }),
         ),
       ),
       flex(

@@ -6,10 +6,14 @@ const waitForText = (page, text, options = { visible: true }) =>
   page.waitForSelector(`::-p-text(${text})`, options)
 
 const stat = (page, label) =>
-  page.$$eval('.stat', (stats, label) => {
-    const found = stats.find((node) => node.querySelector('small').textContent === label)
-    return found.querySelector('b').textContent
-  }, label)
+  page.$$eval(
+    '.stat',
+    (stats, label) => {
+      const found = stats.find((node) => node.querySelector('small').textContent === label)
+      return found.querySelector('b').textContent
+    },
+    label,
+  )
 
 test('draws the board and a fresh score', async ({ page }) => {
   await page.waitForSelector('canvas')

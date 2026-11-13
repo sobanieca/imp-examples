@@ -9,7 +9,7 @@ const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other']
 
 const keysOf = (messages, prefix = '') =>
   Object.entries(messages).flatMap(([key, value]) =>
-    typeof value === 'object' ? keysOf(value, `${prefix}${key}.`) : [`${prefix}${key}`]
+    typeof value === 'object' ? keysOf(value, `${prefix}${key}.`) : [`${prefix}${key}`],
   )
 
 // A plural group is compared by its name: each language has its own forms.

@@ -103,7 +103,8 @@ const summaryTable = (panel, data, unit) =>
         min: Math.min(...values),
         max: Math.max(...values),
         mean: average(values),
-      }))),
+      })),
+    ),
   })
 
 const LEVEL_COLORS = { info: 'blue', warn: 'amber', error: 'red' }

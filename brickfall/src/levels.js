@@ -1,21 +1,8 @@
 // One string per row, one character per brick: a colour, S for steel (two hits)
 // or a dot for a gap. Every row has COLUMNS characters.
 export const LEVELS = [
-  [
-    'RRRRRRRRRR',
-    'OOOOOOOOOO',
-    'YYYYYYYYYY',
-    'GGGGGGGGGG',
-    'CCCCCCCCCC',
-  ],
-  [
-    'P.P.P.P.P.',
-    '.C.C.C.C.C',
-    'SSGGGGGGSS',
-    'YYYY..YYYY',
-    'OO.OOOO.OO',
-    'RRRRRRRRRR',
-  ],
+  ['RRRRRRRRRR', 'OOOOOOOOOO', 'YYYYYYYYYY', 'GGGGGGGGGG', 'CCCCCCCCCC'],
+  ['P.P.P.P.P.', '.C.C.C.C.C', 'SSGGGGGGSS', 'YYYY..YYYY', 'OO.OOOO.OO', 'RRRRRRRRRR'],
   [
     '....SS....',
     '...PPPP...',

@@ -73,10 +73,8 @@ export const connectorList = component('beacon-connector-list', {
 
     // `lang` is a dependency so the rows, and the tags rendered in them, are
     // rendered again in a new language.
-    const rows = computed(
-      [connectors, statuses, lang],
-      (all, status) =>
-        all.map((connector) => ({ ...connector, status: status[connector.id] ?? 'untested' })),
+    const rows = computed([connectors, statuses, lang], (all, status) =>
+      all.map((connector) => ({ ...connector, status: status[connector.id] ?? 'untested' })),
     )
 
     await reload()
@@ -162,33 +160,34 @@ export const connectorList = component('beacon-connector-list', {
       dialog(
         { title: message('connectors.add'), open: adding },
         // Built again on every open, so the form starts empty each time.
-        adding.view((open) =>
-          open &&
-          form(
-            {
-              initialValues: { name: '', type: 'prometheus', url: '', isDefault: false },
-              onSubmit: create,
-            },
-            textField({ field: 'name', label: message('connectors.name'), required: true }),
-            select({
-              field: 'type',
-              label: message('connectors.type'),
-              options: TYPES.map(({ value, label }) => ({ value, label })),
-            }),
-            textField({
-              field: 'url',
-              type: 'url',
-              label: message('connectors.url'),
-              required: true,
-              placeholder: 'http://prometheus:9090',
-            }),
-            toggle({ field: 'isDefault', label: message('connectors.isDefault') }),
-            flex(
-              { horizontalAlign: 'end' },
-              button({ events: { click: () => adding.set(false) } }, say('common.cancel')),
-              submitButton(say('connectors.add')),
+        adding.view(
+          (open) =>
+            open
+            && form(
+              {
+                initialValues: { name: '', type: 'prometheus', url: '', isDefault: false },
+                onSubmit: create,
+              },
+              textField({ field: 'name', label: message('connectors.name'), required: true }),
+              select({
+                field: 'type',
+                label: message('connectors.type'),
+                options: TYPES.map(({ value, label }) => ({ value, label })),
+              }),
+              textField({
+                field: 'url',
+                type: 'url',
+                label: message('connectors.url'),
+                required: true,
+                placeholder: 'http://prometheus:9090',
+              }),
+              toggle({ field: 'isDefault', label: message('connectors.isDefault') }),
+              flex(
+                { horizontalAlign: 'end' },
+                button({ events: { click: () => adding.set(false) } }, say('common.cancel')),
+                submitButton(say('connectors.add')),
+              ),
             ),
-          )
         ),
       ),
     )

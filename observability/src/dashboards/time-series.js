@@ -155,17 +155,13 @@ export const timeSeries = component('beacon-time-series', {
     const draw = () => {
       self.plot?.destroy()
       const result = self.data.get()
-      self.plot = new uPlot(
-        options(self.box, result, self.unit),
-        columns(result),
-        self.box,
-      )
+      self.plot = new uPlot(options(self.box, result, self.unit), columns(result), self.box)
     }
     // The theme sets the colours and the language the axes: either one draws it again.
     computed([theme, lang], (active, code) => `${active?.name}:${code}`).watch(self, draw)
     self.data.watch(self, (result) => self.plot.setData(columns(result)))
     self.resize = new ResizeObserver(() =>
-      self.plot.setSize({ width: self.box.clientWidth, height: HEIGHT })
+      self.plot.setSize({ width: self.box.clientWidth, height: HEIGHT }),
     )
     self.resize.observe(self.box)
   },

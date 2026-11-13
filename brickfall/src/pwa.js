@@ -19,8 +19,8 @@ addEventListener('beforeinstallprompt', (event) => {
 })
 
 const runningAsApp = () =>
-  matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches ||
-  navigator.standalone === true
+  matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches
+  || navigator.standalone === true
 
 // Safari has no install prompt: on an iPhone the way in is the Share menu.
 const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent)
@@ -68,10 +68,14 @@ export const pwaStatus = component('brickfall-pwa-status', {
 
     const signal = self.abortSignal
     addEventListener('beforeinstallprompt', () => install.set(installState()), { signal })
-    addEventListener('appinstalled', () => {
-      installOffer = null
-      install.set('installed')
-    }, { signal })
+    addEventListener(
+      'appinstalled',
+      () => {
+        installOffer = null
+        install.set('installed')
+      },
+      { signal },
+    )
     addEventListener('online', () => online.set(true), { signal })
     addEventListener('offline', () => online.set(false), { signal })
     workerState().then((state) => signal.aborted || worker.set(state))
@@ -88,10 +92,10 @@ export const pwaStatus = component('brickfall-pwa-status', {
     return div(
       { class: 'bar' },
       worker.view((state) =>
-        tag({ color: WORKER_TAGS[state].color, dot: true }, WORKER_TAGS[state].text)
+        tag({ color: WORKER_TAGS[state].color, dot: true }, WORKER_TAGS[state].text),
       ),
       online.view((on) =>
-        tag({ color: on ? 'green' : 'red', dot: true }, on ? 'Online' : 'Offline')
+        tag({ color: on ? 'green' : 'red', dot: true }, on ? 'Online' : 'Offline'),
       ),
       install.view((state) => {
         if (state === 'offer') {

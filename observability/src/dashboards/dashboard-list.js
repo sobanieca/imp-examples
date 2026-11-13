@@ -17,7 +17,7 @@ const editHref = (dashboardId) => app.dashboards.$dashboardId.edit.href({ dashbo
 
 const matches = (dashboard, search) =>
   [dashboard.title, ...dashboard.tags].some((word) =>
-    word.toLowerCase().includes(search.trim().toLowerCase())
+    word.toLowerCase().includes(search.trim().toLowerCase()),
   )
 
 export const dashboardList = component('beacon-dashboard-list', {
@@ -29,10 +29,10 @@ export const dashboardList = component('beacon-dashboard-list', {
     api.get('/dashboards').then(dashboards.set)
 
     // `lang` is a dependency too: the panel count tag is text in the current language.
-    const items = computed(
-      [dashboards, search, lang],
-      (all, text) =>
-        (all ?? []).filter((dashboard) => matches(dashboard, text)).map((dashboard) => ({
+    const items = computed([dashboards, search, lang], (all, text) =>
+      (all ?? [])
+        .filter((dashboard) => matches(dashboard, text))
+        .map((dashboard) => ({
           id: dashboard.id,
           title: dashboard.title,
           description: dashboard.description,
@@ -54,10 +54,13 @@ export const dashboardList = component('beacon-dashboard-list', {
         kind: 'warning',
         title: t('dashboards.confirmDelete', { title: item.title }),
         description: t('dashboards.confirmDeleteDescription'),
-        actions: [{ id: 'delete', label: t('common.delete'), variant: 'danger' }, {
-          id: 'keep',
-          label: t('dashboards.keep'),
-        }],
+        actions: [
+          { id: 'delete', label: t('common.delete'), variant: 'danger' },
+          {
+            id: 'keep',
+            label: t('dashboards.keep'),
+          },
+        ],
         duration: 0,
         ttl: 0,
       })
@@ -86,7 +89,7 @@ export const dashboardList = component('beacon-dashboard-list', {
           type: 'search',
           ariaLabel: t('dashboards.search'),
           placeholder: t('dashboards.searchPlaceholder'),
-        })
+        }),
       ),
       // `undefined` means not loaded yet: show a skeleton, not "empty".
       computed([dashboards, items], (all, shown) => {

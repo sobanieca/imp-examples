@@ -39,9 +39,8 @@ export const notificationCenter = component('impulse-notification-center', {
       button(
         {
           variant: 'ghost',
-          label: computed(
-            [unread],
-            (count) => (count ? `Notifications, ${count} unread` : 'Notifications'),
+          label: computed([unread], (count) =>
+            count ? `Notifications, ${count} unread` : 'Notifications',
           ),
           events: { click: () => open.set(true) },
         },
@@ -54,23 +53,23 @@ export const notificationCenter = component('impulse-notification-center', {
           all.length === 0
             ? emptyState({ icon: luBellOff, title: 'You are all caught up' })
             : stack(
-              { gap: 4 },
-              timeline({
-                label: 'Notifications',
-                items: all.map((entry) => ({
-                  id: entry.id,
-                  time: entry.time,
-                  title: entry.title,
-                  description: entry.description,
-                  color: COLORS[entry.kind],
-                  href: entry.link?.href,
-                })),
-              }),
-              flex(
-                { horizontalAlign: 'end' },
-                button({ variant: 'ghost', events: { click: clearAll } }, 'Clear all'),
+                { gap: 4 },
+                timeline({
+                  label: 'Notifications',
+                  items: all.map((entry) => ({
+                    id: entry.id,
+                    time: entry.time,
+                    title: entry.title,
+                    description: entry.description,
+                    color: COLORS[entry.kind],
+                    href: entry.link?.href,
+                  })),
+                }),
+                flex(
+                  { horizontalAlign: 'end' },
+                  button({ variant: 'ghost', events: { click: clearAll } }, 'Clear all'),
+                ),
               ),
-            )
         ),
       ),
       toast(),

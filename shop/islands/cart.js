@@ -30,7 +30,8 @@ const cartContents = component('impulse-cart-contents', {
         ...item,
         title: item.name,
         description: `${item.quantity} x ${money(item.price)}`,
-      })))
+      })),
+    )
 
     // Rebuilt only when the cart turns empty or stops being empty. The list and
     // the total follow every other change in place.
@@ -39,45 +40,44 @@ const cartContents = component('impulse-cart-contents', {
     return isEmpty.view((empty) =>
       empty
         ? emptyState({
-          icon: luShoppingCart,
-          title: 'Your cart is empty',
-          description: 'Add something you like.',
-        })
+            icon: luShoppingCart,
+            title: 'Your cart is empty',
+            description: 'Add something you like.',
+          })
         : stack(
-          { gap: 4 },
-          list({
-            label: 'Products in your cart',
-            items,
-            leading: (item) => span({ style: { fontSize: '1.75rem' } }, item.emoji),
-            actions: (item) =>
-              flex(
-                { gap: 1, verticalAlign: 'center' },
-                iconButton(
-                  `One less ${item.name}`,
-                  luMinus,
-                  () => setQuantity(item.id, item.quantity - 1),
+            { gap: 4 },
+            list({
+              label: 'Products in your cart',
+              items,
+              leading: (item) => span({ style: { fontSize: '1.75rem' } }, item.emoji),
+              actions: (item) =>
+                flex(
+                  { gap: 1, verticalAlign: 'center' },
+                  iconButton(`One less ${item.name}`, luMinus, () =>
+                    setQuantity(item.id, item.quantity - 1),
+                  ),
+                  iconButton(`One more ${item.name}`, luPlus, () =>
+                    setQuantity(item.id, item.quantity + 1),
+                  ),
+                  iconButton(`Remove ${item.name}`, luTrash2, () => setQuantity(item.id, 0)),
                 ),
-                iconButton(
-                  `One more ${item.name}`,
-                  luPlus,
-                  () => setQuantity(item.id, item.quantity + 1),
-                ),
-                iconButton(`Remove ${item.name}`, luTrash2, () => setQuantity(item.id, 0)),
+            }),
+            flex(
+              { horizontalAlign: 'justify', verticalAlign: 'center' },
+              text(
+                { weight: 'bold', size: 'lg' },
+                cart.text(({ total }) => `Total ${money(total)}`),
               ),
-          }),
-          flex(
-            { horizontalAlign: 'justify', verticalAlign: 'center' },
-            text({ weight: 'bold', size: 'lg' }, cart.text(({ total }) => `Total ${money(total)}`)),
-            button(
-              {
-                variant: 'primary',
-                loading: computed([api.tracked('checkout').pending], (count) => count > 0),
-                events: { click: onCheckout },
-              },
-              'Check out',
+              button(
+                {
+                  variant: 'primary',
+                  loading: computed([api.tracked('checkout').pending], (count) => count > 0),
+                  events: { click: onCheckout },
+                },
+                'Check out',
+              ),
             ),
           ),
-        )
     )
   },
 })
@@ -92,9 +92,8 @@ export const cart = component('impulse-cart', {
 
     onCartChange(self, cart.set)
 
-    const count = computed(
-      [cart],
-      ({ items }) => items.reduce((sum, item) => sum + item.quantity, 0),
+    const count = computed([cart], ({ items }) =>
+      items.reduce((sum, item) => sum + item.quantity, 0),
     )
 
     const checkout = async () => {

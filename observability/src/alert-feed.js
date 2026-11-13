@@ -1,4 +1,4 @@
-import { component } from 'imp'
+import { component, interval } from 'imp'
 import { t } from 'imp/i18n'
 import { useHttpClient } from 'imp/http'
 import { notify } from 'imp/std/feedback'
@@ -31,8 +31,7 @@ export const alertFeed = component('beacon-alert-feed', {
     }
 
     poll()
-    self.timer = setInterval(poll, POLL_EVERY)
+    interval(self, POLL_EVERY, poll, { whenVisible: true })
     return null
   },
-  onRemove: (self) => clearInterval(self.timer),
 })
