@@ -1,45 +1,456 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>imp examples</title>
-    <meta name="description" content="Live demos of apps built with imp" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="Live demos of apps built with imp, the complete UI toolkit" />
+    <link rel="canonical" href="https://examples.imp-ui.com/" />
+    <link rel="icon" href="mark-dark.svg" type="image/svg+xml" />
+    <link rel="preload" href="fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
     <style>
-      body {
-        font-family: system-ui, sans-serif;
-        line-height: 1.5;
-        max-inline-size: 40rem;
-        margin-inline: auto;
-        padding: 2rem 1rem;
+      @font-face {
+        font-family: 'IBM Plex Sans';
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(fonts/ibm-plex-sans.woff2) format('woff2');
       }
-      li {
-        margin-block-end: 0.75rem;
+
+      @font-face {
+        font-family: 'IBM Plex Mono';
+        font-weight: 400;
+        font-display: swap;
+        src: url(fonts/ibm-plex-mono-400.woff2) format('woff2');
+      }
+
+      @font-face {
+        font-family: 'Sora';
+        font-weight: 600;
+        font-display: swap;
+        src: url(fonts/sora-600.woff2) format('woff2');
+      }
+
+      :root {
+        --font: 'IBM Plex Sans', system-ui, sans-serif;
+        --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+        --font-heading: 'Sora', system-ui, sans-serif;
+        --space-2: 8px;
+        --space-3: clamp(0.625rem, 0.573rem + 0.221vw, 0.75rem);
+        --space-4: clamp(0.75rem, 0.646rem + 0.442vw, 1rem);
+        --space-5: clamp(1rem, 0.793rem + 0.884vw, 1.5rem);
+        --space-6: clamp(1.25rem, 0.939rem + 1.326vw, 2rem);
+        --radius-item: 4px;
+        --radius-container: 8px;
+        --main-1: #d700d1;
+        --main-2: #ee4b00;
+        --main-3: #0078ea;
+        --text: #101010;
+        --secondary: #5b5b63;
+        --primary: #101010;
+        --on-primary: #ffffff;
+        --surface: #ffffff;
+        --surface-sunken: #f1f1f4;
+        --border: #e3e3e8;
+        --background: #fafafa;
+        color-scheme: light;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text: #fafafa;
+          --secondary: #a3a3ad;
+          --primary: #fafafa;
+          --on-primary: #101010;
+          --surface: #18181b;
+          --surface-sunken: #222226;
+          --border: #2e2e33;
+          --background: #101010;
+          color-scheme: dark;
+        }
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        min-block-size: 100dvb;
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: var(--font);
+        font-size: 0.875rem;
+        line-height: 1.57;
+      }
+
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: var(--space-6);
+        flex: none;
+        block-size: 56px;
+        padding-inline: var(--space-4) 0;
+        background: #101010;
+        color: #ffffff;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        color: #ffffff;
+        text-decoration: none;
+        font-family: var(--font-heading);
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .brand img {
+        inline-size: 28px;
+        block-size: 28px;
+      }
+
+      .brand small {
+        color: #a3a3ad;
+        font-family: var(--font);
+        font-weight: 400;
+        font-size: 0.875rem;
+      }
+
+      .links {
+        display: flex;
+        gap: var(--space-5);
+        align-self: stretch;
+        margin: 0 0 0 auto;
+        padding: 0;
+        list-style: none;
+      }
+
+      .links a {
+        display: inline-flex;
+        align-items: center;
+        block-size: 100%;
+        color: #a3a3ad;
+        text-decoration: none;
+      }
+
+      .links a:hover {
+        color: #ffffff;
+      }
+
+      .bars {
+        display: flex;
+        gap: 6px;
+        align-self: stretch;
+        padding-inline-end: 6px;
+      }
+
+      .bars div {
+        inline-size: 10px;
+      }
+
+      .main-1 {
+        background: var(--main-1);
+      }
+
+      .main-2 {
+        background: var(--main-2);
+      }
+
+      .main-3 {
+        background: var(--main-3);
+      }
+
+      .bars .main-1 {
+        inline-size: 14px;
+      }
+
+      .canvas {
+        position: relative;
+        flex: 1 1 auto;
+        overflow: hidden;
+      }
+
+      .geometry {
+        --cell: round(clamp(16px, 10px + 1.524dvi, 32px), 4px);
+        position: absolute;
+        inset-inline-end: 0;
+        inset-block-end: 0;
+        inline-size: min(36dvi, 400px);
+        block-size: min(38dvb, 320px);
+        pointer-events: none;
+      }
+
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--text) 1px, transparent 1px),
+          linear-gradient(90deg, var(--text) 1px, transparent 1px);
+        background-size: var(--cell) var(--cell);
+        background-position: right bottom;
+        mask-image: radial-gradient(110% 110% at 100% 100%, black 0%, rgb(0 0 0 / 55%) 30%, transparent 62%);
+        opacity: 0.16;
+      }
+
+      .square {
+        position: absolute;
+        inset-inline-end: calc(var(--column) * var(--cell));
+        inset-block-end: calc(var(--row) * var(--cell));
+        inline-size: calc(var(--span, 1) * var(--cell));
+        block-size: calc(var(--span, 1) * var(--cell));
+      }
+
+      .ink {
+        background: var(--text);
+      }
+
+      main {
+        position: relative;
+        box-sizing: border-box;
+        max-inline-size: 1040px;
+        padding: var(--space-6);
+      }
+
+      .hero {
+        max-inline-size: 44rem;
+        padding-block: var(--space-6) 48px;
+      }
+
+      .hero::before {
+        content: '';
+        display: block;
+        inline-size: 72px;
+        block-size: 6px;
+        margin-block-end: var(--space-5);
+        background: linear-gradient(90deg, var(--main-1) 0 40%, var(--main-2) 40% 70%, var(--main-3) 70%);
+      }
+
+      h1,
+      h2 {
+        font-family: var(--font-heading);
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      h1 {
+        margin: 0 0 var(--space-4);
+        font-size: clamp(2rem, 1.2rem + 3vw, 3.25rem);
+      }
+
+      .hero p {
+        margin: 0 0 var(--space-5);
+        font-size: 1rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .actions a {
+        display: inline-flex;
+        align-items: center;
+        box-sizing: border-box;
+        min-block-size: 40px;
+        padding-inline: var(--space-4);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-item);
+        background: var(--surface);
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .actions li:first-child a {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--on-primary);
+      }
+
+      .examples {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+        gap: var(--space-5);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .example {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        box-sizing: border-box;
+        padding: var(--space-6);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-container);
+        background: var(--surface);
+      }
+
+      .example::before {
+        content: '';
+        display: block;
+        inline-size: 24px;
+        block-size: 6px;
+        background: var(--accent);
+      }
+
+      .example h2 {
+        margin: 0;
+        font-size: 1.375rem;
+      }
+
+      .example p {
+        margin: 0;
+      }
+
+      .example .kind {
+        color: var(--secondary);
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+      }
+
+      .example .note {
+        padding: var(--space-3);
+        border-radius: var(--radius-item);
+        background: var(--surface-sunken);
+        color: var(--secondary);
+      }
+
+      .example .actions {
+        margin-block-start: auto;
+        padding-block-start: var(--space-2);
+      }
+
+      code {
+        padding-inline: 0.3em;
+        border-radius: var(--radius-item);
+        background: var(--surface-sunken);
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
+
+      .note code {
+        background: var(--surface);
+      }
+
+      a:focus-visible {
+        outline: 2px solid var(--main-1);
+        outline-offset: 2px;
+      }
+
+      .bar a:focus-visible {
+        outline-color: #ffffff;
+      }
+
+      @media (width < 48rem) {
+        .bar {
+          gap: var(--space-4);
+        }
+
+        .brand small {
+          display: none;
+        }
+
+        .geometry {
+          inline-size: 60dvi;
+          block-size: 30dvb;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>imp examples</h1>
-    <p>
-      Live demos of apps built with
-      <a href="https://github.com/sobanieca/imp-ui">imp</a>. The source of each one is in
-      <a href="https://github.com/sobanieca/imp-examples">sobanieca/imp-examples</a>.
-    </p>
-    <ul>
-      <li>
-        <a href="observability/">Beacon</a> - a Grafana-like SPA: shell, router, guards, forms,
-        dialogs and translations. A fake API in the page stands in for the backend: sign in with any
-        email and the password <code>admin</code>.
-      </li>
-      <li>
-        <a href="brickfall/">Brickfall</a> - a brick breaker game on a canvas, as a PWA that
-        installs and plays offline.
-      </li>
-    </ul>
-    <p>
-      The shop example renders on the server with Node.js, so it is not hosted here. Run it
-      locally.
-    </p>
+    <header class="bar">
+      <a class="brand" href="https://imp-ui.com/" aria-label="imp - home">
+        <img src="mark-dark.svg" alt="" /><span>imp</span><small>examples</small>
+      </a>
+      <ul class="links">
+        <li><a href="https://imp-ui.com/docs">Docs</a></li>
+        <li><a href="https://github.com/sobanieca/imp-examples">GitHub</a></li>
+      </ul>
+      <div class="bars" aria-hidden="true">
+        <div class="main-1"></div>
+        <div class="main-2"></div>
+        <div class="main-3"></div>
+      </div>
+    </header>
+    <div class="canvas">
+      <div class="geometry" aria-hidden="true">
+        <div class="grid"></div>
+        <div class="square ink" style="--column: 0; --row: 0; --span: 2"></div>
+        <div class="square main-3" style="--column: 2; --row: 0"></div>
+        <div class="square main-2" style="--column: 2; --row: 1"></div>
+        <div class="square main-1" style="--column: 2; --row: 2"></div>
+      </div>
+      <main>
+        <div class="hero">
+          <h1>Apps built with imp.</h1>
+          <p>
+            Three complete apps in plain JavaScript, with no build config and no framework other
+            than <a href="https://imp-ui.com/">imp</a>. Open the live demos, or read the source on
+            GitHub.
+          </p>
+          <ul class="actions">
+            <li><a href="https://imp-ui.com/">Get imp</a></li>
+            <li><a href="https://github.com/sobanieca/imp-examples">Source on GitHub</a></li>
+          </ul>
+        </div>
+        <ul class="examples">
+          <li class="example" style="--accent: var(--main-1)">
+            <h2>Beacon</h2>
+            <p class="kind">observability SPA</p>
+            <p>
+              A Grafana-like app with dashboards, panels and sources: shell, router, guards, forms,
+              charts, tables, dialogs and translations.
+            </p>
+            <p class="note">
+              A fake API in the page stands in for the backend. Sign in with any email and the
+              password <code>admin</code>. Changes last until the page reloads.
+            </p>
+            <ul class="actions">
+              <li><a href="observability/">Open the demo</a></li>
+              <li>
+                <a href="https://github.com/sobanieca/imp-examples/tree/main/observability">Source</a>
+              </li>
+            </ul>
+          </li>
+          <li class="example" style="--accent: var(--main-2)">
+            <h2>Brickfall</h2>
+            <p class="kind">PWA game</p>
+            <p>
+              A brick breaker game on a canvas. One <code>imp.json</code> block makes it a PWA:
+              manifest, icon set, offline service worker and install prompt.
+            </p>
+            <p class="note">Install it from the browser, and it plays offline.</p>
+            <ul class="actions">
+              <li><a href="brickfall/">Play the game</a></li>
+              <li>
+                <a href="https://github.com/sobanieca/imp-examples/tree/main/brickfall">Source</a>
+              </li>
+            </ul>
+          </li>
+          <li class="example" style="--accent: var(--main-3)">
+            <h2>Impulse</h2>
+            <p class="kind">server-rendered shop</p>
+            <p>
+              A shop that Hono renders on Node.js. imp components run as islands in the HTML: the
+              cart, the add-to-cart buttons and the notification center.
+            </p>
+            <p class="note">
+              It needs a server, so it has no live demo. Run it locally with Node.js 22 or later:
+              <code>npm install &amp;&amp; npm run dev</code>, then open localhost:8000.
+            </p>
+            <ul class="actions">
+              <li>
+                <a href="https://github.com/sobanieca/imp-examples/tree/main/shop">Source on GitHub</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </main>
+    </div>
   </body>
 </html>

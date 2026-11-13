@@ -1,7 +1,7 @@
 # Builds the observability and brickfall examples and hosts them on GitHub Pages:
-#   https://adam.sobaniec.com/imp-examples/              the list of demos (pages/index.html)
-#   https://adam.sobaniec.com/imp-examples/observability/
-#   https://adam.sobaniec.com/imp-examples/brickfall/
+#   https://examples.imp-ui.com/                the list of demos (pages/index.html)
+#   https://examples.imp-ui.com/observability/
+#   https://examples.imp-ui.com/brickfall/
 # The shop renders on a server, so it is not part of the site.
 # Each app builds with its "pages" environment, which sets IMP_BASEPATH to its sub-path.
 name: Pages
@@ -43,7 +43,7 @@ jobs:
       - name: Assemble the site
         # GitHub Pages has no SPA fallback. It answers an unknown path with the 404.html at the
         # root of the site, so a copy of the observability page there lets its router take a deep
-        # link such as /imp-examples/observability/dashboards/system. A missing chunk still gets a
+        # link such as /observability/dashboards/system. A missing chunk still gets a
         # 404 status. Brickfall has one screen and no routes, so it needs no fallback.
         run: |
           mkdir _site

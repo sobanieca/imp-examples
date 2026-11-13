@@ -14,22 +14,23 @@ its pages.
 ## Live demos
 
 Two of the apps are hosted on GitHub Pages, at
-[adam.sobaniec.com/imp-examples](https://adam.sobaniec.com/imp-examples/):
+[examples.imp-ui.com](https://examples.imp-ui.com/):
 
-- [Beacon](https://adam.sobaniec.com/imp-examples/observability/) - the
+- [Beacon](https://examples.imp-ui.com/observability/) - the
   observability SPA. It has no backend: a fake API in the page answers its
   requests, so sign in with any email and the password "admin". Changes last
   until the page reloads.
-- [Brickfall](https://adam.sobaniec.com/imp-examples/brickfall/) - the game.
+- [Brickfall](https://examples.imp-ui.com/brickfall/) - the game.
   It installs as a PWA and plays offline.
 
 The shop renders on a server, so it runs locally only.
 
 `.github/workflows/pages.yml` builds and deploys the site on each push to `main`.
 Each app builds with its `pages` environment (`env/pages.json`), which sets
-`IMP_BASEPATH` to its sub-path. To host a fork, enable Pages in the repository
-settings with the source "GitHub Actions", and change `IMP_BASEPATH` to match
-the name of your repository.
+`IMP_BASEPATH` to its sub-path of the custom domain. To host a fork, enable Pages
+in the repository settings with the source "GitHub Actions". Without a custom
+domain the site lives under `/<repository>/`, so prefix `IMP_BASEPATH` with the
+name of your repository, for example `/imp-examples/observability`.
 
 ## Run locally
 
